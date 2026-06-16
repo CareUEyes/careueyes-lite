@@ -1,0 +1,26 @@
+# Visual Studio / Visual C++ build outputs
+Debug/
+Release/
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.res
+*.dep
+*.pch
+*.manifest.res
+*.intermediate.manifest
+
+# Visual Studio user and cache files
+*.ncb
+*.suo
+*.user
+*.aps
+*.opt
+*.plg
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
