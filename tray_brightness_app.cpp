@@ -12,6 +12,8 @@ namespace
     const wchar_t kWindowClassName[] = L"CareUEyesOpenSourceBrightnessWindow";
     const wchar_t kWindowPropName[] = L"CareUEyesBrightnessApp";
     const wchar_t kTrayTip[] = L"CareUEyes Brightness";
+    const wchar_t kRunKeyPath[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+    const wchar_t kRunValueName[] = L"CareUEyes Lite";
     const UINT WM_NOTIFY_MAINAPP_EXIT = WM_USER + 1003;
     const UINT WM_TRAY_CLICK = WM_USER + 1013;
     const UINT EVENT_ID_RESTORE_BRIGHTNESS = 1890;
@@ -71,6 +73,7 @@ bool CTrayBrightnessApp::Initialize(HINSTANCE hInstance)
 
     OneInstace::SetMainAppInstance(m_hWnd, MAINAPP_INSTANCE_UUID);
     RegisterSystemNotify_();
+    SyncStartupState_();
     AddTrayIcon_(TRUE);
     ApplyBrightness_(TRUE);
     return true;
@@ -130,6 +133,18 @@ LRESULT CTrayBrightnessApp::HandleMessage(UINT message, WPARAM wParam, LPARAM lP
             return 0;
         case ID__EXIT:
             Shutdown_();
+            return 0;
+        case ID_LAUNCH_AT_STARTUP:
+            {
+                BOOL bEnabled = TRUE;
+                CSetting::GetInstance()->GetStartupEnabled(bEnabled);
+                const BOOL bNewEnabled = bEnabled ? FALSE : TRUE;
+                if (SetLaunchAtStartup_(bNewEnabled))
+                {
+                    CSetting::GetInstance()->SetStartupEnabled(bNewEnabled);
+                    CSetting::GetInstance()->SaveSetting();
+                }
+            }
             return 0;
         case ID_UPGRADE_TO_PRO:
             ShellExecuteW(NULL, L"open", L"https://care-eyes.com/?lite", NULL, NULL, SW_SHOWNORMAL);
@@ -366,4 +381,52 @@ void CTrayBrightnessApp::UpdateMenuChecks_(HMENU hMenu)
         brightness <= 80 ? ID_BRIGHTNESS_80 :
         ID_BRIGHTNESS_100;
     CheckMenuItem(hMenu, checkedId, MF_BYCOMMAND | MF_CHECKED);
+
+    BOOL bStartupEnabled = TRUE;
+    CSetting::GetInstance()->GetStartupEnabled(bStartupEnabled);
+    CheckMenuItem(
+        hMenu,
+        ID_LAUNCH_AT_STARTUP,
+        MF_BYCOMMAND | (bStartupEnabled ? MF_CHECKED : MF_UNCHECKED));
+}
+
+bool CTrayBrightnessApp::SyncStartupState_()
+{
+    BOOL bStartupEnabled = TRUE;
+    CSetting::GetInstance()->GetStartupEnabled(bStartupEnabled);
+    return SetLaunchAtStartup_(bStartupEnabled);
+}
+
+bool CTrayBrightnessApp::SetLaunchAtStartup_(BOOL bEnabled)
+{
+    CRegKey key;
+    LONG result = key.Create(HKEY_CURRENT_USER, kRunKeyPath);
+    if (result != ERROR_SUCCESS)
+        return false;
+
+    if (bEnabled)
+    {
+        CStringW modulePath;
+        if (!GetModulePath_(modulePath))
+            return false;
+
+        CStringW quotedPath;
+        quotedPath.Format(L"\"%s\"", static_cast<LPCWSTR>(modulePath));
+        result = key.SetStringValue(kRunValueName, quotedPath);
+        return result == ERROR_SUCCESS;
+    }
+
+    result = key.DeleteValue(kRunValueName);
+    return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
+}
+
+bool CTrayBrightnessApp::GetModulePath_(CStringW& modulePath) const
+{
+    WCHAR szPath[MAX_PATH] = {0};
+    const DWORD length = GetModuleFileNameW(NULL, szPath, _countof(szPath));
+    if (length == 0 || length >= _countof(szPath))
+        return false;
+
+    modulePath = szPath;
+    return true;
 }

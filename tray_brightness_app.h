@@ -30,6 +30,9 @@ private:
     void RestoreBrightnessLater_(DWORD dwDelayMS);
     void Shutdown_();
     void UpdateMenuChecks_(HMENU hMenu);
+    bool SyncStartupState_();
+    bool SetLaunchAtStartup_(BOOL bEnabled);
+    bool GetModulePath_(CStringW& modulePath) const;
 
 private:
     HINSTANCE m_hInstance;

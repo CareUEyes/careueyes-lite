@@ -67,6 +67,7 @@ BEGIN
         MENUITEM "80%",                         ID_BRIGHTNESS_80
         MENUITEM "100%",                        ID_BRIGHTNESS_100
         MENUITEM SEPARATOR
+        MENUITEM "Launch at startup",           ID_LAUNCH_AT_STARTUP
         MENUITEM "Upgrade to Pro",              ID_UPGRADE_TO_PRO
         MENUITEM "Exit",                        ID__EXIT
     END

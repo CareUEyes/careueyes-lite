@@ -4,7 +4,9 @@
 
 namespace
 {
+    const wchar_t kSectionGeneral[] = L"general";
     const wchar_t kSectionScreen[] = L"screen";
+    const wchar_t kKeyStartup[] = L"startup";
     const wchar_t kKeyBrightness[] = L"brightness";
     const wchar_t kWorkFolderName[] = L"CareUEyes Lite";
     const wchar_t kConfigFileName[] = L"setting.dat";
@@ -49,6 +51,7 @@ CSetting* CSetting::GetInstance()
 CSetting::CSetting()
 {
     m_nBrightness = 80;
+    m_bStartupEnabled = TRUE;
     ZeroMemory(m_szProfilePath, sizeof(m_szProfilePath));
     ReadSettings();
 }
@@ -60,6 +63,12 @@ void CSetting::ReadSettings()
         return;
     wcsncpy_s(m_szProfilePath, _countof(m_szProfilePath), szPath, _TRUNCATE);
 
+    m_bStartupEnabled = GetPrivateProfileIntW(
+        kSectionGeneral,
+        kKeyStartup,
+        m_bStartupEnabled ? 1 : 0,
+        m_szProfilePath) != 0;
+
     m_nBrightness = ClampBrightness(GetPrivateProfileIntW(
         kSectionScreen,
         kKeyBrightness,
@@ -70,6 +79,9 @@ void CSetting::ReadSettings()
 void CSetting::SaveSetting()
 {
     WCHAR szValue[16] = {0};
+    _snwprintf_s(szValue, _countof(szValue), _TRUNCATE, L"%d", m_bStartupEnabled ? 1 : 0);
+    WritePrivateProfileStringW(kSectionGeneral, kKeyStartup, szValue, m_szProfilePath);
+
     _snwprintf_s(szValue, _countof(szValue), _TRUNCATE, L"%d", m_nBrightness);
     WritePrivateProfileStringW(kSectionScreen, kKeyBrightness, szValue, m_szProfilePath);
 }
@@ -83,5 +95,17 @@ BOOL CSetting::SetBrightness(int nBrightness)
 BOOL CSetting::GetBrightness(int& nBrightness)
 {
     nBrightness = m_nBrightness;
+    return TRUE;
+}
+
+BOOL CSetting::SetStartupEnabled(BOOL bEnabled)
+{
+    m_bStartupEnabled = bEnabled ? TRUE : FALSE;
+    return TRUE;
+}
+
+BOOL CSetting::GetStartupEnabled(BOOL& bEnabled)
+{
+    bEnabled = m_bStartupEnabled;
     return TRUE;
 }
