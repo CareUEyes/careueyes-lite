@@ -28,11 +28,12 @@ https://care-eyes.com/?lite
 
 ## Lite 与 Pro
 
-CareUEyes Lite 提供开源的核心屏幕调光体验。
+CareUEyes Lite 提供 Windows 上开源的核心屏幕调光体验。
 
-如果你需要蓝光过滤、色温调节、休息提醒、专注工具和亮度自动化，可以使用 CareUEyes Pro：
+如果你需要完整的护眼功能，CareUEyes Pro 现已支持 Windows 和 macOS，包含蓝光过滤、色温调节、自定义亮度、休息提醒、专注工具和高级自动化能力。
 
 https://care-eyes.com/?lite
+
 
 ![CareUEyes Pro - 完整护眼套件](assets/careueyes-pro.jpg)
 

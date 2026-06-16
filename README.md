@@ -28,11 +28,12 @@ https://care-eyes.com/?lite
 
 ## Lite and Pro
 
-CareUEyes Lite provides the open-source core screen dimming experience.
+CareUEyes Lite provides the open-source core screen dimming experience for Windows.
 
-For blue light filtering, color temperature adjustment, break reminders, focus tools, and brightness automation, try CareUEyes Pro:
+For a complete eye-care experience, CareUEyes Pro is available for both Windows and macOS. It includes blue light filtering, color temperature adjustment, custom brightness control, break reminders, focus tools, and advanced automation.
 
 https://care-eyes.com/?lite
+
 
 ![CareUEyes Pro - complete eye-care suite](assets/careueyes-pro.jpg)
 
